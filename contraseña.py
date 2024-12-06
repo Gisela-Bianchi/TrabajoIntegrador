@@ -9,11 +9,28 @@ diccionario = {
 }
 
 def generar_pass(caracteres_disponibles, longitud=12):
-    """Genera una contraseña basada en los caracteres proporcionados."""
+   
     if not caracteres_disponibles:
         print("Debes seleccionar al menos una opción (números, letras o caracteres especiales).")
         return None
-    return ''.join(secrets.choice(caracteres_disponibles) for _ in range(longitud))
+    
+    # Asegurar que `caracteres_disponibles` es una lista de listas (por tipo)
+    if isinstance(caracteres_disponibles, str):
+        caracteres_disponibles = [caracteres_disponibles]
+
+    # al menos un caracter de cada tipo seleccionado
+    caracteres_iniciales = [secrets.choice(caracter) for caracter in caracteres_disponibles]
+    
+    # Rellena el resto con caracteres aleatorios 
+    resto_caracteres = ''.join(caracteres_disponibles)  # Combina todos los tipos 
+    if longitud > len(caracteres_iniciales):
+        caracteres_iniciales += [secrets.choice(resto_caracteres) for _ in range(longitud - len(caracteres_iniciales))]
+    
+    # Mezclar los caracteres para que no haya un orden predecible
+    secrets.SystemRandom().shuffle(caracteres_iniciales)
+    
+    return ''.join(caracteres_iniciales)
+
 
 while True:
     print("👉------------------------WELCOME------------------------👈")
@@ -33,7 +50,7 @@ while True:
     try:
         opcion = int(input("►    Escriba la opción seleccionada: "))
     except ValueError:
-        print("❌ Por favor, ingrese un número válido.")
+        print("❌ Por favor, ingrese un número valido.")
         continue
 
     if opcion == 0:
